@@ -1,9 +1,12 @@
-import React from 'react'
+import React from "react";
 
-const ConnectButton = () => {
-  return (
-    {/* <div className='bg-blue-300 rounded-md' onClick={}>ConnectButton</div> */}
-  )
-}
+type Props = {
+  children?: React.ReactNode;
+  onClick?: (event: React.MouseEvent<HTMLElement>) => void;
+};
 
-export default ConnectButton
+const ConnectButton = ({ children, onClick }: Props) => {
+  return <button onClick={onClick} className='bg-blue-500 py-2 px-4 rounded-xl text-white hover:bg-blue-400'>{children}</button>;
+};
+
+export default ConnectButton;
