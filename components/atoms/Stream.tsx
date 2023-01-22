@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import {
   CategoryScale,
   Chart as ChartJS,
+  ChartData,
+  ChartOptions,
   Legend,
   LinearScale,
   LineElement,
@@ -22,35 +24,65 @@ ChartJS.register(
 );
 
 type Props = {
-  time: any,
   data: any;
 };
 
 const Stream = (props: Props) => {
-  // console.log(props)
+  const inputData = props.data;
+  (inputData.length > 100) ? inputData.shift() : inputData;
+  const time: any[] = inputData.map((value: number[]) => value[0]);
 
-  const options = {
+  const datasets = () => {
+    let plotData: any[] = [];
+
+    const colors = [
+      "rgb(255, 99, 132)",
+      "rgb(54, 162, 235)",
+      "rgb(255, 206, 86)",
+      "rgb(75, 192, 192)",
+      "rgb(153, 102, 255)",
+      "rgb(255, 159, 64)",
+      "rgb(255, 99, 132)",
+      "rgb(54, 162, 235)",
+      "rgb(255, 206, 86)",
+      "rgb(75, 192, 192)",
+      "rgb(153, 102, 255)",
+    ];
+
+    for (let i = 1; i < inputData[0]?.length; i++) {
+      const dataset: number[] = inputData.map((value: number[]) => value[i]);
+      plotData.push({
+        label: i,
+        data: dataset,
+        borderWidth: 2,
+        pointRadius: 0,
+        borderColor: colors[i-1]
+      });
+    }
+    return plotData;
+  };
+
+  const data: ChartData<"line"> = {
+    labels: time,
+    datasets: datasets(),
+  };
+
+  const options: ChartOptions<"line"> = {
     responsive: true,
     plugins: {
       title: {
         display: true,
-        text: "グラフタイトル",
+      },
+      legend: {
+        display: true,
       },
     },
-  };
-
-  const data = {
-    labels: props.time,
-    datasets: [
-      {
-        label: "データ1",
-        data: props.data,
-        borderColor: "rgb(255, 99, 132)",
-        borderWidth: 1.5,
-        radius: 0,
-        backgroundColor: "rgba(255, 99, 132, 0.5)",
+    scales: {
+      x: {
+        // type: "linear",
+        // display: true,
       },
-    ],
+    },
   };
 
   return (
