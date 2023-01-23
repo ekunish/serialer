@@ -26,7 +26,7 @@ const ChannelSelect = (props: Props) => {
 
   items.forEach((item, index) => {
     itemList.push(
-      <div key={index} className="p-1" onClick={() => updateCheck(index)}>
+      <button key={index} className="p-1" onClick={() => updateCheck(index)}>
         <input
           type="checkbox"
           // defaultChecked={true}
@@ -35,7 +35,7 @@ const ChannelSelect = (props: Props) => {
           className="mr-5"
         />
         {item}
-      </div>,
+      </button>,
     );
   });
 
@@ -43,7 +43,7 @@ const ChannelSelect = (props: Props) => {
     <div className="">
       <div
         onClick={() => setIsList(!isList)}
-        className="w-32 p-4 shadow rounded bg-gray-50 text-sm font-medium leading-none text-gray-800 flex items-center justify-between cursor-pointer"
+        className="w-32 p-4 shadow rounded bg-gray-50 text-sm font-medium leading-none text-gray-800 flex items-center justify-between cursor-pointer hover:bg-white"
       >
         Channels
         <div>
@@ -86,8 +86,28 @@ const ChannelSelect = (props: Props) => {
       {isList && (
         <div className="w-32 mt-2 p-4 bg-white shadow rounded absolute">
           {itemList}
-          <div className="text-center bg-gray-100 rounded-md mt-2">
-            All
+          <div className="text-center mt-2">
+            {(isCheck.includes(false))
+              ? (
+                <button
+                  className="bg-blue-100 rounded-md w-full h-full"
+                  onClick={() => {
+                    setIsCheck(items.map(() => true));
+                  }}
+                >
+                  All
+                </button>
+              )
+              : (
+                <button
+                  className="bg-gray-50 rounded-md w-full h-full"
+                  onClick={() => {
+                    setIsCheck(items.map(() => false));
+                  }}
+                >
+                  Clear
+                </button>
+              )}
           </div>
         </div>
       )}

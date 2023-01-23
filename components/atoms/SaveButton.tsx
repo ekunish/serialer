@@ -5,15 +5,15 @@ type Props = {
   onClick?: (event: React.MouseEvent<HTMLElement>) => void;
 };
 
-const ConnectButton = ({ children, onClick }: Props) => {
+const SaveButton = ({ children, onClick }: Props) => {
   return (
     <button
       onClick={onClick}
-      className="bg-blue-500 p-2 px-4 rounded-lg text-white hover:bg-blue-400 shadow"
+      className="bg-red-500 p-2 px-4 rounded-lg text-white hover:bg-red-400 shadow"
     >
       {children}
     </button>
   );
 };
 
-export default ConnectButton;
+export default SaveButton;

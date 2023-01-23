@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import ConnectButton from "@/components/atoms/ConnectButton";
 import Stream from "@/components/atoms/Stream";
 import ChannelMenu from "@/components/moleculars/ChannelMenu";
+import SaveButton from "@/components/atoms/SaveButton";
 
 const Monitor = () => {
   const [isSupported, setIsSupported] = useState(false);
@@ -43,7 +44,6 @@ const Monitor = () => {
       const OpenPort = async () => {
         try {
           await port.open({ baudRate: 115200 });
-          console.log("Port is open.");
         } catch (err) {
           console.error("Error opening port:", err);
         }
@@ -99,22 +99,57 @@ const Monitor = () => {
     }
   };
 
-  useEffect(() => {
-    console.log(visibleChannels)
-  }, [visibleChannels])
+  const SaveClicked = async () => {
+    ExportCSV(serialDataset, getDateTime());
+    ClearDataset();
+  };
+
+  const ExportCSV = async (records: any[][], name: string) => {
+    let data = records.map((record) => record.join(",")).join("\r\n");
+
+    let bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
+    let blob = new Blob([bom, data], { type: "text/csv" });
+    let url = (window.URL || window.webkitURL).createObjectURL(blob);
+    let link = document.createElement("a");
+    link.download = name + ".csv"
+    link.href = url;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const getDateTime = () => {
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = ("0" + (date.getMonth() + 1)).slice(-2);
+    const day = ("0" + date.getDate()).slice(-2);
+    const hour = date.getHours();
+    const minute = date.getMinutes();
+    const second = date.getSeconds();
+
+    return `${year}${month}${day}${hour}${minute}${second}`;
+  };
+
+  const ClearDataset = () => {
+    setSerialDataset([]);
+  };
 
   return (
     <div className="p-5">
+      <div>
+        <h1 className="text-2xl">Web Serial API Monitor</h1>
+      </div>
       <div className="mb-1">
         {isSupported && (
           <div className="text-sm">Web Serial API is Supported.</div>
         )}
       </div>
       <div className="flex">
-      <ConnectButton onClick={ConnectClicked}>Connect</ConnectButton>
+        <ConnectButton onClick={ConnectClicked}>Connect</ConnectButton>
         <div className="mx-1"></div>
-      <ChannelMenu setVisibleChannels={setVisibleChannels}/>
-
+        <ChannelMenu setVisibleChannels={setVisibleChannels} />
+        <div className="mx-10"></div>
+        <SaveButton onClick={SaveClicked}>Save</SaveButton>
       </div>
       <Stream data={serialDataset} visibleChannels={visibleChannels} />
     </div>
