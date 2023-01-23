@@ -1,27 +1,16 @@
 import React, { useEffect, useState } from "react";
-import ConnectButton from "./ConnectButton";
-// import Graph from "./Graph";
-import Stream from "./Stream";
-
-// type data = {
-//   time: number;
-//   red: number;
-//   ir: number;
-// };
+import ConnectButton from "@/components/atoms/ConnectButton";
+import Stream from "@/components/atoms/Stream";
+import ChannelMenu from "@/components/moleculars/ChannelMenu";
 
 const Monitor = () => {
   const [isSupported, setIsSupported] = useState(false);
   const [port, setPort] = useState<SerialPort>();
 
   const [serialData, setSerialData] = useState<any[]>([]);
-  const [serialDataset, setSerialDataset] = useState<any[]>([]);
-  const [serialDataNum, setSerialDataNum] = useState<number>(0);
+  const [serialDataset, setSerialDataset] = useState<any[][]>([]);
 
-  // const [dat, setDat] = useState<data>();
-  // const [dats, setDats] = useState<data[]>([]);
-
-  const [time, setTime] = useState<any[]>([0]);
-  const [data, setData] = useState<any[]>([0]);
+  const [visibleChannels, setVisibleChannels] = useState<boolean[]>([]);
 
   class LineBreakTransformer {
     chunks: string;
@@ -82,8 +71,6 @@ const Monitor = () => {
                 const v: String[] = value.split("\t");
                 setSerialData(v);
               }
-
-              // (serialDataNum === (v.length - 1)) && setSerialData(v);
             }
           } catch (error) {
             console.log("Error: Read");
@@ -96,14 +83,6 @@ const Monitor = () => {
       OpenPort();
     }
   }, [port]);
-
-  // useEffect(() => {
-  //   if (dat) {
-  //     const dd: data[] = [...dats, dat];
-  //     setDats(dd);
-  //     // console.log(dd)
-  //   }
-  // }, [dat]);
 
   useEffect(() => {
     if (serialData[0]) {
@@ -120,41 +99,24 @@ const Monitor = () => {
     }
   };
 
+  useEffect(() => {
+    console.log(visibleChannels)
+  }, [visibleChannels])
+
   return (
     <div className="p-5">
-      <div>
+      <div className="mb-1">
         {isSupported && (
           <div className="text-sm">Web Serial API is Supported.</div>
         )}
       </div>
-      {/* <div className="relative"> */}
-      {/*   <select className="w-40 p-2.5 text-gray-500 bg-white border rounded-md shadow-sm outline-none appearance-none focus:border-indigo-600"> */}
-      {/*       {[1, 2, 3, 4, 5].map((value) => <option>{value}</option>)} */}
-      {/*   </select> */}
-      {/* </div> */}
-
-      {/* <div> */}
-      {/*   <input */}
-      {/*     value={serialDataNum} */}
-      {/*     onChange={(e) => setSerialDataNum(Number(e.target.value))} */}
-      {/*     className="w-40 p-2.5 text-gray-500 bg-white border rounded-md shadow-sm outline-none appearance-none focus:border-indigo-600" */}
-      {/*   /> */}
-      {/* </div> */}
-
+      <div className="flex">
       <ConnectButton onClick={ConnectClicked}>Connect</ConnectButton>
-      {/* <div>{dat && dat.time}</div> */}
-      {/* <Graph dat={dat} /> */}
-      <Stream data={serialDataset} />
-      <button
-        type="button"
-        onClick={() => {
-          const t = time.slice(-1)[0] + 1;
-          setTime([...time, t]);
-          setData([...data, Math.random()]);
-        }}
-      >
-        ランダム
-      </button>
+        <div className="mx-1"></div>
+      <ChannelMenu setVisibleChannels={setVisibleChannels}/>
+
+      </div>
+      <Stream data={serialDataset} visibleChannels={visibleChannels} />
     </div>
   );
 };

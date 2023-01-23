@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import {
   CategoryScale,
   Chart as ChartJS,
@@ -25,11 +25,12 @@ ChartJS.register(
 
 type Props = {
   data: any;
+  visibleChannels: boolean[];
 };
 
 const Stream = (props: Props) => {
   const inputData = props.data;
-  (inputData.length > 100) ? inputData.shift() : inputData;
+  (inputData.length > 200) ? inputData.shift() : inputData;
   const time: any[] = inputData.map((value: number[]) => value[0]);
 
   const datasets = () => {
@@ -50,13 +51,15 @@ const Stream = (props: Props) => {
     ];
 
     for (let i = 1; i < inputData[0]?.length; i++) {
+      if (!props.visibleChannels[i - 1]) continue;
+
       const dataset: number[] = inputData.map((value: number[]) => value[i]);
       plotData.push({
         label: i,
         data: dataset,
         borderWidth: 2,
         pointRadius: 0,
-        borderColor: colors[i-1]
+        borderColor: colors[i - 1],
       });
     }
     return plotData;
@@ -82,6 +85,15 @@ const Stream = (props: Props) => {
         // type: "linear",
         // display: true,
       },
+    },
+    animations: {
+      tension: {
+        duration: 0,
+        easing: 'linear',
+        from: 1,
+        to: 0,
+        loop: true
+      }
     },
   };
 
